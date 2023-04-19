@@ -2,17 +2,19 @@
 
 #include <iostream>
 #include <thread>
+#include <windows.h>
 using namespace std;
 
 //void hi(){ cout<<"hi\n"; }
 //void bye(){ cout<<"bye\n"; }
-void a(){ cout<<"Hello parallel world\n"; }
+void a(){ Sleep(500); cout<<"\nthread in func: "<<this_thread::get_id(); Sleep(500); }
 
 int main(){
     thread A(a);
     cout << "threads:\n\n";
-    A.join();
-    cout<<"\nexe complete\n";
+    cout<<"thread in main: "<<A.get_id();
+    Sleep(500); A.join();
+    cout<<"\n\nexe complete\n";
 }
 //при свертывании строки join во время работы вызывается abort и в консоль сообщение треда выводится в самом конце после строки exe complete
 
