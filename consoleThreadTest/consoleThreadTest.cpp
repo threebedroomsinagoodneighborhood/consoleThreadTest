@@ -5,14 +5,12 @@
 #include <windows.h>
 using namespace std;
 
-//void hi(){ cout<<"hi\n"; }
-//void bye(){ cout<<"bye\n"; }
 void a(){ Sleep(500); cout<<"\nthread in func: "<<this_thread::get_id(); Sleep(500); }
 
 int main(){
     thread A(a);
-    cout << "threads:\n\n";
-    cout<<"thread in main: "<<A.get_id();
+    cout<<"threads:\n\n"
+        <<"thread in main: "<<A.get_id();
     Sleep(500); A.join();
     cout<<"\n\nexe complete\n";
 }
