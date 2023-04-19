@@ -4,14 +4,17 @@
 #include <thread>
 using namespace std;
 
-void hi(){ cout<<"hi\n"; }
-void bye(){ cout<<"bye\n"; }
+//void hi(){ cout<<"hi\n"; }
+//void bye(){ cout<<"bye\n"; }
+void a(){ cout<<"Hello parallel world\n"; }
+
 int main(){
-    thread first(hi),second(bye);
-    cout << "Hello World!\nthreads:\n\n";
-    first.join(); second.join();
+    thread A(a);
+    cout << "threads:\n\n";
+    A.join();
     cout<<"\nexe complete\n";
 }
+//при свертывании строки join во время работы вызывается abort и в консоль сообщение треда выводится в самом конце после строки exe complete
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
