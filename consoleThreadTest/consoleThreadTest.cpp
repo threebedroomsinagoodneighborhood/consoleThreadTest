@@ -67,13 +67,15 @@ int main(int argc,char * argv[]){
 #include <thread>
 #include <windows.h>
 using namespace std;
-mutex m;
-void p(int n){ m.lock(); cout<<n<<" hello\n"; m.unlock(); }
+mutex m; thread::id mainid=this_thread::get_id();
+void c(){ thread::id id=this_thread::get_id(); if (mainid==id) cout<<"main\n"; else cout<<"not main\n"; }
+void p(int n){ m.lock();  cout<<n<<": "; c(); cout<<this_thread::get_id()<<"\n"; m.unlock(); }//lockguard<mutex> g(m);//объ€вить эту переменную достаточно чтобы заменить две функции
 int main(int argc,char * argv[]){
+    cout<<mainid<<"\n"; c();
     thread t1(p,1); thread t2(p,2); thread t3(p,3); thread t4(p,4);
-           t1.join();      t2.join();      t3.join();      t4.join();//хихи
-    return 0;//все еще вне очереди, но перемешки нет
-}//проблема mutex - переход обратно к последовательному программированию, понижение эффективности; deadlock - при вызове одного треда внутри другого?
+    t1.join();             t2.join();      t3.join();      t4.join();
+    return 0;
+}
 
 //инструкции
 /*// consoleThreadTest.cpp : This file contains the 'main' function. Program execution begins and ends there.
