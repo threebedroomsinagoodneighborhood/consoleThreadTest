@@ -62,7 +62,7 @@ int main(int argc,char * argv[]){
 }*/
 
 //------------------------день третий, повтор, лучше каждую стадию закоммитить
-#include <mutex>
+/*#include <mutex>
 #include <iostream>
 #include <thread>
 #include <windows.h>
@@ -84,7 +84,7 @@ void sum(int n,int arr[],int index){
     arr[index]=s;
     cout<<id<<" finish;) ";
 }    
-int main(int argc,char * argv[]){
+int arrmain(int argc,char * argv[]){
     const int length=20;
     thread::id id;
     thread thread_array[length];
@@ -96,6 +96,19 @@ int main(int argc,char * argv[]){
             thread_array[i].join();
             cout<<"thread id "<<id<<"\tcalculated sum "<<res_arr[i]<<"\n";
         }//mutex лишний для вычислительных программ, но в результате для текста внутри идет перемешка
+    return 0;
+}
+*/
+
+//------------------------задачи
+#include <mutex>
+#include <iostream>
+#include <thread>
+#include <windows.h>
+#include <cstdlib>
+using namespace std;
+int main(int argc,char * argv[]){
+    int hc=thread::hardware_concurrency(); cout<<hc;//ЕХЕХЕ А У МЕНЯ ВОСЕМЬ
     return 0;
 }
 
