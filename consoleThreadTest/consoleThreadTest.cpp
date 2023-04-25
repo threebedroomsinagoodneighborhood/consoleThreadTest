@@ -19,7 +19,7 @@ int main(){
 */
 
 //------------------------день второй
-#include <mutex>
+/*#include <mutex>
 #include <iostream>
 #include <thread>
 #include <windows.h>
@@ -59,8 +59,20 @@ int main(int argc,char * argv[]){
         }
     //у меня смешения cout нету никакого а у препода есть..
     return 0;
-}
+}*/
 
+//------------------------день третий, повтор, лучше каждую стадию закоммитить
+#include <mutex>
+#include <iostream>
+#include <thread>
+#include <windows.h>
+using namespace std;
+
+void p(){ cout<<"Hello\n"; }
+int main(int argc,char * argv[]){
+    thread t(p); t.join();
+    return 0;
+}
 
 //инструкции
 /*// consoleThreadTest.cpp : This file contains the 'main' function. Program execution begins and ends there.
