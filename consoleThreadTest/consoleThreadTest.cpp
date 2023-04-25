@@ -69,11 +69,33 @@ int main(int argc,char * argv[]){
 using namespace std;
 mutex m; thread::id mainid=this_thread::get_id();
 void c(){ thread::id id=this_thread::get_id(); if (mainid==id) cout<<"main\n"; else cout<<"not main\n"; }
-void p(int n){ m.lock();  cout<<n<<": "; c(); cout<<this_thread::get_id()<<"\n"; m.unlock(); }//lockguard<mutex> g(m);//объ€вить эту переменную достаточно чтобы заменить две функции
-int main(int argc,char * argv[]){
+void p(int n){ m.lock();  cout<<n<<": "; c(); cout<<this_thread::get_id()<<"\n"; m.unlock(); }//lockguard<mutex> g(m);
+int prevmain(int argc,char * argv[]){
     cout<<mainid<<"\n"; c();
     thread t1(p,1); thread t2(p,2); thread t3(p,3); thread t4(p,4);
     t1.join();             t2.join();      t3.join();      t4.join();
+    return 0;
+}
+//работа с массивами
+void sum(int n,int arr[],int index){
+    thread::id id=this_thread::get_id();
+    cout<<"("<<id<<" begin: ";
+    int s=0; for (int i=0; i<n; i++) s+=i;
+    arr[index]=s;
+    cout<<id<<" finish;) ";
+}    
+int main(int argc,char * argv[]){
+    const int length=20;
+    thread::id id;
+    thread thread_array[length];
+    int res_arr[length]={0};
+    for (int i=0; i<length; i++) thread_array[i]=thread(sum,rand(),res_arr,i);
+    for (int i=0; i<length; i++)
+        if (thread_array[i].joinable()){
+            id=thread_array[i].get_id();
+            thread_array[i].join();
+            cout<<"thread id "<<id<<"\tcalculated sum "<<res_arr[i]<<"\n";
+        }//mutex лишний дл€ вычислительных программ, но в результате дл€ текста внутри идет перемешка
     return 0;
 }
 
