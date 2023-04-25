@@ -107,8 +107,26 @@ int arrmain(int argc,char * argv[]){
 #include <windows.h>
 #include <cstdlib>
 using namespace std;
+double p(int n){//рекуррентная формула
+    if (n==0) return 1;//почему-то без этой строки все плохо
+    while (n>0) return pow(-1,n)/(2*n+1) + p(n-1); 
+}
+void psep(int n,double arr[]){ arr[n]=pow(-1,n)/(2*n+1);}//arr[index]=a; return a; }
 int main(int argc,char * argv[]){
-    int hc=thread::hardware_concurrency(); cout<<hc;//ЕХЕХЕ А У МЕНЯ ВОСЕМЬ
+    //int hc=thread::hardware_concurrency(); cout<<hc;//ЕХЕХЕ А У МЕНЯ ВОСЕМЬ
+    //cout<<p(800)*4;//чтобы потоки были полезны лучше всего массив делать
+    int start = clock(); // время старта
+    int const N=100;
+    double arr[N]={0},pi=0; thread arrt[N];
+    for (int i=0; i<N; i++) arrt[i]=thread(psep,i,arr);
+    for (int i=0; i<N; i++)
+        if (arrt[i].joinable()){
+            arrt[i].join(); pi+=arr[i]; //cout<<arr[i]<<endl;
+        }
+    cout<<pi*4;
+	int end = clock(); // время окончания
+	double time = (double)(end - start) / CLOCKS_PER_SEC;
+	cout<<endl<<time;
     return 0;
 }
 
