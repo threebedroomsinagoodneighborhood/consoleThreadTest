@@ -67,16 +67,13 @@ int main(int argc,char * argv[]){
 #include <thread>
 #include <windows.h>
 using namespace std;
-
-void p(int n){ cout<<n<<" hello\n"; }
+mutex m;
+void p(int n){ m.lock(); cout<<n<<" hello\n"; m.unlock(); }
 int main(int argc,char * argv[]){
-    thread t1(p,1); //t1.join();//последовательные join одновременно с инициализацией предотвращают перемешку
-    thread t2(p,2); //t2.join();
-    thread t3(p,3); //t3.join();
-    thread t4(p,4); //t4.join();
-    t1.join(); t2.join(); t3.join(); t4.join();//все join один за другим начинают мутить
-    return 0;//правда у меня все подозрительно красиво 20 раз подряд :D
-}
+    thread t1(p,1); thread t2(p,2); thread t3(p,3); thread t4(p,4);
+           t1.join();      t2.join();      t3.join();      t4.join();//хихи
+    return 0;//все еще вне очереди, но перемешки нет
+}//проблема mutex - переход обратно к последовательному программированию, понижение эффективности; deadlock - при вызове одного треда внутри другого?
 
 //инструкции
 /*// consoleThreadTest.cpp : This file contains the 'main' function. Program execution begins and ends there.
