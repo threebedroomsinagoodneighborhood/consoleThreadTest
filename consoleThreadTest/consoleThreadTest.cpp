@@ -68,10 +68,14 @@ int main(int argc,char * argv[]){
 #include <windows.h>
 using namespace std;
 
-void p(){ cout<<"Hello\n"; }
+void p(int n){ cout<<n<<" hello\n"; }
 int main(int argc,char * argv[]){
-    thread t(p); t.join();
-    return 0;
+    thread t1(p,1); //t1.join();//последовательные join одновременно с инициализацией предотвращают перемешку
+    thread t2(p,2); //t2.join();
+    thread t3(p,3); //t3.join();
+    thread t4(p,4); //t4.join();
+    t1.join(); t2.join(); t3.join(); t4.join();//все join один за другим начинают мутить
+    return 0;//правда у меня все подозрительно красиво 20 раз подряд :D
 }
 
 //инструкции
