@@ -134,23 +134,67 @@ double pv(int n){
     if (n==0) return 1;
     while (n>0) return 4*pow(n,2)/(4*pow(n,2)-1)*pv(n-1);
 }
-void pvsep(int n,double arr[]){ if (n==0) arr[n]=1; else arr[n]=4*pow(n,2)/(4*pow(n,2)-1); }
-int main(int argc,char * argv[]){
+void pvsep(int n,double arr[]){
+    if (n==0) arr[n]=1;//надо умножать с 1 а не с 0 поэтому if нужно
+    else arr[n]=4*pow(n,2)/(4*pow(n,2)-1); 
+}
+int pvmain(int argc,char * argv[]){
     //cout<<pv(1000)*2;
     int start = clock(); // врем€ старта
-    int const N=1000;
+    int const N=100;
     double arr[N]={0},pi=1; thread arrt[N];//вместо p=0 -> p=1
     for (int i=0; i<N; i++) arrt[i]=thread(pvsep,i,arr);
     for (int i=0; i<N; i++)
         if (arrt[i].joinable()){
-            arrt[i].join(); pi*=arr[i]; //вместо += -> *=
+            arrt[i].join(); pi*=arr[i];//вместо += -> *=
         }
     cout<<pi*2;//вместо *4 -> *2
     int end = clock(); // врем€ окончани€
     double time = (double)(end - start) / CLOCKS_PER_SEC;
     cout<<"\nсекунд на подсчет: "<<time;
-    return 0;//примерно идентична€ задача, наверное € зр€ новый мейн писала, можно было новый цикл for в предыдущем создать дл€ новой формулы
+    return 0;//наверное € зр€ новый мейн писала, можно было новый цикл for в предыдущем создать дл€ новой формулы
 }
+//интрегрирование... диос мио...
+//ехе по опечаткам сразу видно что иванюхин задавал))
+//пока только пи провер€ю на точность
+int const N=100;//когда все помен€ла на long double что-то сломалось?
+double const realpi=3.1415926535897932384626433832795028841971693993751058209749;//68 вроде цифер причем не все вмещаютс€ похоже без long
+double const E=0.001;//точность
+void compare(double pi,bool f){ if (fabs(realpi-pi<E)) f=1;}//€ не умею пока что сравнивать нормально
+int main(int argc,char * argv[]){
+    double arrml[N]={0},arrv[N]={0},
+           piml=0,      piv=1;
+    thread arrtml[N],   arrtv[N],
+        comparepi[N];
+    bool enough=0;
+    for (int i=0; i<N; i++) { 
+        arrtml[i]=thread(pmlsep,i,arrml),arrtv[i]=thread(pvsep,i,arrv);
+    }
+    //while (thread comppi(compare,piml)){//в поток надо пихнуть функцию сравнени€ точности..
+    for (int i=0; i<N; i++)
+        if (arrtml[i].joinable()){
+            arrtml[i].join(); piml+=arrml[i]; 
+            //comparepi[i]=thread(compare,piml*4,enough);//это же последовательно будет? после каждого пи останавливать программу чтобы проверить но проверка внутри треде? здесь нет параллельности
+            //if (comparepi[i].joinable()) comparepi[i].join();//только если каждый результат пи записывать в еще один массив и провер€ть все результаты массива в треде ожида€ что программа не пройдет весь массив, и тогда мы зр€ считали более точные пи без остановки
+            cout<<piml*4<<", ";
+            compare(piml*4,enough);
+            if (enough) { cout<<"\nstop\n"; break; }
+        }
+    //cout<<"\n"<<piml*4<<"\n\n";
+    printf("\n%.50f\n\n",piml*4);
+    enough=0;//чтобы вместить обе формулы в один цикл надо два флага создать, пока обойдусь одним и помен€ю его обратно на 0 в конце первого цикла
+    for (int i=0; i<N; i++)
+        if (arrtv[i].joinable()){
+            arrtv[i].join(); piv*=arrv[i];
+            cout<<piv*2<<", ";
+            compare(piv*2,enough);
+            if (enough) { cout<<"\nstop\n"; break; }
+        }
+    //cout<<"\n"<<piv*2;
+    printf("\n%.50f\n\npi:\n%.50f",piv*2,realpi);
+    return 0;//здесь у мен€ не работает сравнение на точность. хелп
+}
+
 //инструкции
 /*// consoleThreadTest.cpp : This file contains the 'main' function. Program execution begins and ends there.
 
