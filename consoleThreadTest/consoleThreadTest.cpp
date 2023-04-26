@@ -107,18 +107,18 @@ int arrmain(int argc,char * argv[]){
 #include <windows.h>
 #include <cstdlib>
 using namespace std;
-double p(int n){//рекуррентная формула
+double pml(int n){//рекуррентная формула мадхава-лейбница
     if (n==0) return 1;//почему-то без этой строки все плохо
-    while (n>0) return pow(-1,n)/(2*n+1) + p(n-1); 
+    while (n>0) return pow(-1,n)/(2*n+1) + pml(n-1); 
 }
-void psep(int n,double arr[]){ arr[n]=pow(-1,n)/(2*n+1);}//arr[index]=a; return a; }
-int main(int argc,char * argv[]){
+void pmlsep(int n,double arr[]){ arr[n]=pow(-1,n)/(2*n+1);}//arr[index]=a; return a; }
+int pmlmain(int argc,char * argv[]){
     //int hc=thread::hardware_concurrency(); cout<<hc;//ЕХЕХЕ А У МЕНЯ ВОСЕМЬ
-    //cout<<p(800)*4;//чтобы потоки были полезны лучше всего массив делать
+    //cout<<pml(800)*4;//чтобы потоки были полезны лучше всего массив делать
     int start = clock(); // время старта
     int const N=100;
     double arr[N]={0},pi=0; thread arrt[N];
-    for (int i=0; i<N; i++) arrt[i]=thread(psep,i,arr);
+    for (int i=0; i<N; i++) arrt[i]=thread(pmlsep,i,arr);
     for (int i=0; i<N; i++)
         if (arrt[i].joinable()){
             arrt[i].join(); pi+=arr[i]; //cout<<arr[i]<<endl;
@@ -129,7 +129,28 @@ int main(int argc,char * argv[]){
 	cout<<endl<<time;
     return 0;
 }
-
+//формула валлиса
+double pv(int n){
+    if (n==0) return 1;
+    while (n>0) return 4*pow(n,2)/(4*pow(n,2)-1)*pv(n-1);
+}
+void pvsep(int n,double arr[]){ if (n==0) arr[n]=1; else arr[n]=4*pow(n,2)/(4*pow(n,2)-1); }
+int main(int argc,char * argv[]){
+    //cout<<pv(1000)*2;
+    int start = clock(); // время старта
+    int const N=1000;
+    double arr[N]={0},pi=1; thread arrt[N];//вместо p=0 -> p=1
+    for (int i=0; i<N; i++) arrt[i]=thread(pvsep,i,arr);
+    for (int i=0; i<N; i++)
+        if (arrt[i].joinable()){
+            arrt[i].join(); pi*=arr[i]; //вместо += -> *=
+        }
+    cout<<pi*2;//вместо *4 -> *2
+    int end = clock(); // время окончания
+    double time = (double)(end - start) / CLOCKS_PER_SEC;
+    cout<<"\nсекунд на подсчет: "<<time;
+    return 0;//примерно идентичная задача, наверное я зря новый мейн писала, можно было новый цикл for в предыдущем создать для новой формулы
+}
 //инструкции
 /*// consoleThreadTest.cpp : This file contains the 'main' function. Program execution begins and ends there.
 
