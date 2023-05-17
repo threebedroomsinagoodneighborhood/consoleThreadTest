@@ -161,7 +161,7 @@ int const N=100;//когда все поменяла на long double что-то сломалось?
 double const realpi=3.1415926535897932384626433832795028841971693993751058209749;//68 вроде цифер причем не все вмещаются похоже без long
 double const E=0.001;//точность
 void compare(double pi,bool f){ if (fabs(realpi-pi<E)) f=1;}//я не умею пока что сравнивать нормально
-int main(int argc,char * argv[]){
+int taskmain(int argc,char * argv[]){
     double arrml[N]={0},arrv[N]={0},
            piml=0,      piv=1;
     thread arrtml[N],   arrtv[N],
