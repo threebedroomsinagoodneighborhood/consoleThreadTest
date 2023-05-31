@@ -29,7 +29,7 @@ public:
 	void print(){ for (auto e:_elements) cout<<e<<" "; }
 };
 void write(container<int> & c,int a){ c.add(a); }
-int main(int argc,char * argv[]){
+int writemain(int argc,char * argv[]){
 	container<int> ct;
 	//thread t1(write,ref(ct),1);
 	//thread t2(write,ref(ct),2);
@@ -43,3 +43,50 @@ int main(int argc,char * argv[]){
 	ct.print();
 	return 0;
 }
+
+//---------день 2: auto fs= 5s; считается как секунды, заменяет fs=chrono::seconds(5);
+using namespace std::chrono_literals;
+void run(int count){ while (count-- >0) cout<<count<<"\n"; this_thread::sleep_for(1s); }
+
+int runmain(int argc,char * argv[]){
+	thread t1(run,10);//,t2(run,5);
+	//cout<<"start\n"; t1.join(); cout<<"end\n"; t2.join();//будет писать end последним
+	
+	if (t1.joinable()) t1.detach(); this_thread::sleep_for(5us);//detach обязательно с sleep_for чисто чтобы тред шел дольше чем мейн и успел доработать
+	if (t1.joinable()) t1.join(); /*не joinит*/ cout<<"end\n";//то есть join это барьер, мейн всегда ждет тред. detach иначе, у них гонка
+	return 0;
+}
+//---------задача?
+void zapis(vector<int> vector,int n){ for (int i=0;i<n;i++) vector.push_back(i); }
+void udalenie(vector<int> vector,int n){ while (n-->0) if (!vector.empty()) vector.pop_back(); }
+void vyvod(vector<int> vector){ for (auto i: vector) cout<<i; }
+int weirdmain(int argc,char * argv[]){
+	vector<int> lol; thread t1(zapis,lol,10),t2(udalenie,lol,2),t3(vyvod,lol);
+	t1.join();	t2.join();	t3.join();
+	return 0;
+}
+
+vector<int> v; 
+void T3(){ cout<<"\nchange: "; for (auto i:v) cout<<i<<" "; }
+void T1(int n){ for (int i=0; i<n; i++) { v.push_back(i); T3(); } }
+void T2(){ while (!v.empty()){ v.pop_back(); T3(); } }
+int vTtmain(int argc,char * argv[]){	
+	thread t1(T1,10),t2(T2),t3(T3);
+	t1.join();	t2.join();	t3.join();
+	return 0;
+}
+
+void add(int i){ v.push_back(i); }
+void del(){ if (!v.empty()) v.pop_back(); }
+void out(){ cout<<"\nchange: "; for (auto i:v) cout<<i<<" "; }
+int badmain(){
+	int const n=10; int i=n;
+	thread arr1[n],arr2[n],arr3[n];
+	while (!v.empty()) {
+		while (i-->0){
+			arr1[i]=thread(add,i);	arr2[i]=thread(del);	arr2[i]=thread(out);
+			arr1[i].join(); arr2[i].join(); arr3[i].join();
+		}
+	}
+	return 0;
+}//не т_т
