@@ -33,12 +33,11 @@ int wowmain(int argc,char * argv[]){//вот это игры...
 		cout<<c<<"12:30\n";
 	}
 //12:33
-
 	cout<<"\n\tfinish";
 	return 0;
 }
-//12:40
-int funcsum(int a[],int b[],int N){
+//12:40 ========================================================== задача
+int funcsum(int a[],int b[],int N){//суммировать значения массива но с омп
 	int sum=0;
 #pragma omp parallel for reduction(+:sum)
 	for (int i=0; i<N; i++)//без for дает сумму 256 (32*8)
@@ -51,17 +50,17 @@ int funcmain(int argc,char * argv[]){
 	int a[N]={1,2,3},b[N]={4,5,6}; cout<<"\t"<<funcsum(a,b,N);
 	return 0;
 }
-//12:50
+//12:50 ------------ версия 2 на статический двумерный массив
 const int N=3;
 int c[N];
-void f(int a[],int b[3Ui64][3Ui64],int N){ 
+void f(int a[],int b[3Ui64][3Ui64],int N){ //я забыла про поинтеры поэтому я вставила те буковки которые код выводит если мышкой навести на массив b
 	int sum=0; 
 #pragma omp parallel for reduction(+:sum)
 	for (int i=0; i<N; i++){
 		c[i]=b[i][0];		 for (int j=1; j<N; j++) c[i]+=b[i][j];
 	}
 }
-int main(int argc,char * argv[]){
+int staticmain(int argc,char * argv[]){
 	//srand(time(NULL));
 	int a[N], b[N][N];
 	for (int i=0; i<N; i++){
@@ -74,3 +73,34 @@ int main(int argc,char * argv[]){
 	return 0;
 }
 //13:16 переделать под динамический массив с рандомной длиной b[][j]
+//16:43 ------------ версия 3
+int const row=5;
+void fn(int a[], int*b[], int c[]){
+#pragma omp parallel for
+	for (int i=0; i<row; i++) for (int j=0; j<c[i]; j++) a[i]+=b[i][j];
+}
+int dynamicmain(int argc,char * argv[]){
+	//srand(time(NULL));
+	int a[row]={0},*b[row],column[row];
+	for (int i=0; i<row; i++){
+		column[i]=rand()%10+2;	b[i]=new int[column[i]];
+		for (int j=0; j<column[i]; j++) b[i][j]=rand()%10;
+	} fn(a,b,column);
+	for (int i=0; i<row; i++){ for (int j=0; j<column[i]; j++)	
+		cout<<b[i][j]<<" "; cout<<"= "<<a[i]<<"\n"; }
+	return 0;
+}//17:00 ==========================================================
+//17:30
+void r(int level){
+#pragma omp single//выполняется только одним тредом после чего остальные треды не делают это
+	{ cout<<"level "<<level<<": number of threads: "<<omp_get_num_threads()<<"\n"; }
+}
+int main(int argc,char * argv[]){
+#pragma omp parallel num_threads(2)
+	{ r(1);
+#pragma omp parallel num_threads(2)
+		{ r(2);
+#pragma omp parallel num_threads(2)
+			{ r(3); } } }
+	return 0;
+}
